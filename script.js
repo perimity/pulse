@@ -58,7 +58,7 @@
       event.preventDefault();
 
       const email = form.elements.email.value.trim();
-      const subject = "Pulse demo request";
+      const subject = "Pulse waitlist signup";
       const body = `Requested by: ${email}`;
 
       const mailtoUrl =
