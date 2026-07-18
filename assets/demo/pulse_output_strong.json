@@ -1,0 +1,98 @@
+{
+  "tenantName": "Northbridge Data Systems",
+  "tenantDomain": "northbridgedata.onmicrosoft.com",
+  "reportGenerated": "2026-07-18",
+  "overview": {
+    "usersAnalyzed": 340,
+    "adminRolesDetected": 4,
+    "conditionalAccessPolicies": 6
+  },
+  "signals": [
+    {
+      "control": "Legacy Authentication",
+      "status": "good",
+      "message": "No legacy authentication activity detected"
+    },
+    {
+      "control": "Privileged Role MFA",
+      "status": "good",
+      "message": "All privileged roles require MFA"
+    },
+    {
+      "control": "Privileged Role Count",
+      "status": "good",
+      "message": "4 privileged roles detected"
+    },
+    {
+      "control": "Conditional Access Policies",
+      "status": "good",
+      "message": "6 conditional access policies configured"
+    },
+    {
+      "control": "Conditional Access Exclusions",
+      "status": "good",
+      "message": "No conditional access exclusions detected"
+    },
+    {
+      "control": "Security Awareness Training",
+      "status": "good",
+      "severity": "Low",
+      "message": "Training document present"
+    }
+  ],
+  "insuranceSignals": [
+    {
+      "control": "Legacy Authentication",
+      "riskCategory": "Credential Compromise",
+      "claimExposure": [
+        "Account Takeover",
+        "Data Breach"
+      ]
+    },
+    {
+      "control": "Privileged Role MFA",
+      "riskCategory": "Identity Compromise",
+      "claimExposure": [
+        "Ransomware",
+        "Business Interruption"
+      ]
+    },
+    {
+      "control": "Privileged Role Count",
+      "riskCategory": "Privilege Escalation",
+      "claimExposure": [
+        "Data Breach",
+        "Unauthorized Access"
+      ]
+    },
+    {
+      "control": "Conditional Access Policies",
+      "riskCategory": "Access Control Weakness",
+      "claimExposure": [
+        "Unauthorized Access"
+      ]
+    },
+    {
+      "control": "Conditional Access Exclusions",
+      "riskCategory": "Control Bypass",
+      "claimExposure": [
+        "Data Exfiltration",
+        "Account Takeover"
+      ]
+    },
+    {
+      "control": "Security Awareness Training",
+      "riskCategory": "Social Engineering Risk",
+      "claimExposure": [
+        "Business Email Compromise",
+        "Funds Transfer Fraud"
+      ]
+    }
+  ],
+  "riskScore": 100,
+  "lossRatio": {
+    "range": "30\u201350%",
+    "rating": "Favorable"
+  },
+  "aiSummary": "Favorable risk posture with no material control gaps identified. Expected loss ratio 30\u201350%. Recommend standard terms."
+}

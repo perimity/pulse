@@ -1,0 +1,90 @@
+{
+  "tenantName": "Alder & Vance Consulting",
+  "tenantDomain": "aldervance.onmicrosoft.com",
+  "reportGenerated": "2026-07-18",
+  "overview": {
+    "usersAnalyzed": 480,
+    "adminRolesDetected": 6,
+    "conditionalAccessPolicies": 3
+  },
+  "signals": [
+    {
+      "control": "Legacy Authentication",
+      "status": "warning",
+      "message": "Legacy authentication activity detected"
+    },
+    {
+      "control": "Privileged Role MFA",
+      "status": "good",
+      "message": "All privileged roles require MFA"
+    },
+    {
+      "control": "Excessive Privileged Roles",
+      "status": "warning",
+      "message": "6 privileged roles detected"
+    },
+    {
+      "control": "Conditional Access Policies",
+      "status": "good",
+      "message": "3 conditional access policies configured"
+    },
+    {
+      "control": "Conditional Access Exclusions",
+      "status": "good",
+      "message": "No conditional access exclusions detected"
+    },
+    {
+      "control": "Security Awareness Training",
+      "status": "warning",
+      "severity": "High",
+      "message": "No training document detected"
+    }
+  ],
+  "insuranceSignals": [
+    {
+      "control": "Legacy Authentication",
+      "riskCategory": "Credential Compromise",
+      "claimExposure": [
+        "Account Takeover",
+        "Data Breach"
+      ]
+    },
+    {
+      "control": "Privileged Role MFA",
+      "riskCategory": "Identity Compromise",
+      "claimExposure": [
+        "Ransomware",
+        "Business Interruption"
+      ]
+    },
+    {
+      "control": "Conditional Access Policies",
+      "riskCategory": "Access Control Weakness",
+      "claimExposure": [
+        "Unauthorized Access"
+      ]
+    },
+    {
+      "control": "Conditional Access Exclusions",
+      "riskCategory": "Control Bypass",
+      "claimExposure": [
+        "Data Exfiltration",
+        "Account Takeover"
+      ]
+    },
+    {
+      "control": "Security Awareness Training",
+      "riskCategory": "Social Engineering Risk",
+      "claimExposure": [
+        "Business Email Compromise",
+        "Funds Transfer Fraud"
+      ]
+    }
+  ],
+  "riskScore": 60,
+  "lossRatio": {
+    "range": "50\u201370%",
+    "rating": "Moderate"
+  },
+  "aiSummary": "Moderate risk posture (60/100) driven by: Legacy authentication activity detected; 6 privileged roles detected. Expected loss ratio 50\u201370%. Recommend review before binding."
+}
