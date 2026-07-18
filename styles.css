@@ -15,6 +15,12 @@
   --color-line: #e4e0ea;
   --color-signal: #2fae6b;
 
+  /* Status scale for demo risk ratings — extends the palette, doesn't replace it */
+  --color-good: #2fae6b;
+  --color-caution: #c98a2e;
+  --color-elevated: #b5651d;
+  --color-risk: #b3413a;
+
   /* Type */
   --font-display: "Fraunces", Georgia, serif;
   --font-body: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -361,6 +367,195 @@ section:not(.hero) + section:not(.hero) {
   color: var(--color-ink-soft);
   max-width: 60ch;
 }
+
+/* Demo */
+
+.demo-intro {
+  margin-top: var(--space-2);
+  color: var(--color-ink-soft);
+  max-width: 60ch;
+}
+
+.demo-picker {
+  margin-top: var(--space-4);
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.3rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+}
+
+.demo-tab {
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.6em 1.2em;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.demo-tab:hover { color: var(--color-ink); }
+
+.demo-tab.is-active {
+  background: var(--color-purple-deep);
+  color: #fff;
+}
+
+.demo-panel {
+  margin-top: var(--space-4);
+  min-height: 12rem;
+}
+
+.demo-loading,
+.demo-error {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+  padding: var(--space-4) 0;
+}
+
+.demo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.demo-tenant-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.15rem;
+}
+
+.demo-tenant-domain {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--color-ink-soft);
+  margin-top: 0.2rem;
+}
+
+.demo-score-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.demo-score {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.demo-rating {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.35em 0.8em;
+  border-radius: 999px;
+  color: #fff;
+}
+
+.rating-favorable { background: var(--color-good); }
+.rating-moderate { background: var(--color-caution); }
+.rating-elevated { background: var(--color-elevated); }
+.rating-adverse { background: var(--color-risk); }
+
+.demo-summary {
+  margin-top: var(--space-3);
+  background: var(--color-purple-wash);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+}
+
+.demo-summary-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-purple-deep);
+  margin-bottom: 0.4rem;
+}
+
+.demo-summary-text {
+  color: var(--color-ink);
+  max-width: 75ch;
+}
+
+.demo-subhead {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-2);
+}
+
+.demo-signals {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.75rem;
+}
+
+.signal-card {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+}
+
+.signal-card.is-warning { border-color: rgba(201, 138, 46, 0.4); }
+.signal-card.is-good { border-color: rgba(47, 174, 107, 0.3); }
+
+.signal-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.signal-icon { font-size: 0.85rem; }
+.signal-card.is-warning .signal-icon { color: var(--color-caution); }
+.signal-card.is-good .signal-icon { color: var(--color-good); }
+
+.signal-card-message {
+  margin-top: 0.35rem;
+  font-size: 0.88rem;
+  color: var(--color-ink-soft);
+}
+
+.demo-insurance {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.75rem;
+}
+
+.insurance-card {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+}
+
+.insurance-card-title { font-weight: 600; font-size: 0.92rem; }
+
+.insurance-card-meta {
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+}
+
+.insurance-card-meta b { color: var(--color-ink); font-weight: 600; }
 
 /* Audience */
 
