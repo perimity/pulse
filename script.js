@@ -43,30 +43,46 @@
   }
 
   /**
-   * Turn the "Request access" form into a pre-filled mailto link.
-   * The form's native `action="mailto:..."` is left in place as a fallback
-   * for the rare case JS doesn't run — this just makes the common case
-   * (JS enabled) produce a cleaner, subject-and-body-filled email.
+   * Submit the "Join the waitlist" form to a Google Apps Script Web App,
+   * which appends the email to a Google Sheet you own. Body is sent as a
+   * plain string (not application/json) on purpose — that keeps the
+   * request in the CORS "simple request" category so the browser doesn't
+   * send a preflight OPTIONS request, which Apps Script Web Apps don't
+   * handle. mode: "no-cors" means we can't read the response back (Google
+   * doesn't send CORS headers on Apps Script responses), so we can't truly
+   * confirm success client-side — we optimistically show a thank-you state
+   * and rely on checking the Sheet directly to verify submissions arrive.
    */
   function initAccessForm() {
     const form = document.getElementById("access-form");
     if (!form) return;
 
-    const DEST = "cjacobs@perimity.io";
+    // Replace with the Web App URL from Deploy > New deployment in Apps Script.
+    const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbxPaRBngzyd_WYvNpyAbi_6Jmj42ZfncwoY7aNBVPfZcnuPImHNv-TINB_L-6Do1G4AUA/exec";
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
 
       const email = form.elements.email.value.trim();
-      const subject = "Pulse waitlist signup";
-      const body = `Requested by: ${email}`;
+      const submitBtn = form.querySelector("button[type=submit]");
+      const originalLabel = submitBtn.textContent;
 
-      const mailtoUrl =
-        `mailto:${DEST}` +
-        `?subject=${encodeURIComponent(subject)}` +
-        `&body=${encodeURIComponent(body)}`;
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Joining…";
 
-      window.location.href = mailtoUrl;
+      fetch(SHEET_ENDPOINT, {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify({ email }),
+      })
+        .catch((err) => {
+          // no-cors means most failures are invisible to JS anyway; this
+          // only catches network-level failures (e.g. offline).
+          console.error("Pulse waitlist: submission failed", err);
+        })
+        .finally(() => {
+          form.innerHTML = '<p class="cta-success">You\'re on the list — we\'ll be in touch.</p>';
+        });
     });
   }
 
