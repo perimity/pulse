@@ -244,7 +244,7 @@
         <p class="demo-subhead">What to fix before renewal</p>
         ${organizationActions(data)}
         ${signals}
-        ${buildTrainingChart(scenario)}
+        ${buildTrainingChart(scenario, data)}
       `;
       return;
     }
@@ -257,7 +257,7 @@
         <p class="demo-summary-text">${escapeHtml(data.aiSummary)}</p>
       </div>
       ${signals}
-      ${buildTrainingChart(scenario)}
+      ${buildTrainingChart(scenario, data)}
       <p class="demo-subhead">Insurance exposure</p>
       <div class="demo-insurance">${insuranceHtml(data.insuranceSignals)}</div>
     `;
@@ -284,7 +284,17 @@
     return "var(--color-risk)";
   }
 
-  function buildTrainingChart(scenario) {
+  function buildTrainingChart(scenario, data) {
+    const saSignal = data.signals.find((s) => s.control === "Security Awareness Training");
+    const isWarning = saSignal && saSignal.status === "warning";
+
+    if (!isWarning) {
+      return `
+        <p class="demo-subhead">Security Awareness training</p>
+        <p class="demo-clean-state">Consistent completion every month for the last 6 months — nothing further to flag here.</p>
+      `;
+    }
+
     const values = TRAINING_TREND[scenario];
     if (!values) return "";
 
@@ -309,7 +319,7 @@
       .join("");
 
     return `
-      <p class="demo-subhead">Training completion — last 6 months</p>
+      <p class="demo-subhead">Security Awareness training — last 6 months</p>
       <div class="training-chart">
         <svg viewBox="0 0 600 145" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Monthly security awareness training completion rate">
           <line x1="30" y1="${baselineY}" x2="570" y2="${baselineY}" stroke="var(--color-line)" stroke-width="1"></line>
