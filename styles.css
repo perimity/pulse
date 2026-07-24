@@ -565,6 +565,48 @@ section:not(.hero) + section:not(.hero) {
   border-bottom: 1px solid var(--color-line);
 }
 
+.category-scores {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-line);
+  flex-wrap: wrap;
+}
+
+.category-score-item {
+  flex: 1;
+  min-width: 140px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  padding: 0.7rem 1rem;
+  text-align: center;
+}
+
+.category-score-item.is-good { border-color: rgba(47, 174, 107, 0.35); }
+.category-score-item.is-moderate { border-color: rgba(201, 138, 46, 0.4); }
+.category-score-item.is-weak { border-color: rgba(179, 65, 58, 0.4); }
+
+.category-score-value {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.6rem;
+}
+
+.category-score-item.is-good .category-score-value { color: var(--color-good); }
+.category-score-item.is-moderate .category-score-value { color: var(--color-caution); }
+.category-score-item.is-weak .category-score-value { color: var(--color-risk); }
+
+.category-score-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  margin-top: 0.2rem;
+}
+
 .demo-tenant-name {
   font-family: var(--font-display);
   font-weight: 600;
@@ -651,6 +693,9 @@ section:not(.hero) + section:not(.hero) {
 
 .signal-card.is-warning { border-color: rgba(201, 138, 46, 0.4); }
 .signal-card.is-good { border-color: rgba(47, 174, 107, 0.3); }
+.signal-card.is-strong { border-color: rgba(47, 174, 107, 0.3); }
+.signal-card.is-moderate { border-color: rgba(201, 138, 46, 0.4); }
+.signal-card.is-weak { border-color: rgba(179, 65, 58, 0.4); }
 
 .signal-card-title {
   display: flex;
@@ -663,6 +708,19 @@ section:not(.hero) + section:not(.hero) {
 .signal-icon { font-size: 0.85rem; }
 .signal-card.is-warning .signal-icon { color: var(--color-caution); }
 .signal-card.is-good .signal-icon { color: var(--color-good); }
+.signal-card.is-strong .signal-icon { color: var(--color-good); }
+.signal-card.is-moderate .signal-icon { color: var(--color-caution); }
+.signal-card.is-weak .signal-icon { color: var(--color-risk); }
+
+.signal-tier-label {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  font-weight: 600;
+}
 
 .signal-card-message {
   margin-top: 0.35rem;
