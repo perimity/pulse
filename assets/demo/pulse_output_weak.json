@@ -34,6 +34,24 @@
       "message": "No conditional access exclusions detected"
     },
     {
+      "control": "EDR Adoption Rate",
+      "status": "warning",
+      "message": "72% of endpoints have EDR deployed",
+      "tier": "Weak"
+    },
+    {
+      "control": "EDR Exclusions",
+      "status": "good",
+      "message": "No EDR exclusions detected",
+      "tier": "Strong"
+    },
+    {
+      "control": "EDR Definition Currency",
+      "status": "warning",
+      "message": "Definitions last updated 52 days ago",
+      "tier": "Weak"
+    },
+    {
       "control": "Security Awareness Training",
       "status": "good",
       "severity": "Low",
@@ -81,6 +99,29 @@
       ]
     },
     {
+      "control": "EDR Adoption Rate",
+      "riskCategory": "Malware Execution",
+      "claimExposure": [
+        "Ransomware",
+        "Business Interruption"
+      ]
+    },
+    {
+      "control": "EDR Exclusions",
+      "riskCategory": "Control Bypass",
+      "claimExposure": [
+        "Data Exfiltration",
+        "Ransomware"
+      ]
+    },
+    {
+      "control": "EDR Definition Currency",
+      "riskCategory": "Malware Execution",
+      "claimExposure": [
+        "Ransomware"
+      ]
+    },
+    {
       "control": "Security Awareness Training",
       "riskCategory": "Social Engineering Risk",
       "claimExposure": [
@@ -89,10 +130,10 @@
       ]
     }
   ],
-  "riskScore": 55,
+  "riskScore": 30,
   "lossRatio": {
-    "range": "70\u201390%",
-    "rating": "Elevated"
+    "range": "90%+",
+    "rating": "Adverse"
   },
-  "aiSummary": "Elevated risk posture (55/100) driven by: Some privileged roles do not have MFA configured; No conditional access policies configured. Expected loss ratio 70\u201390%. Recommend remediation of the drivers below before binding."
+  "aiSummary": "Adverse risk posture (30/100) driven by: Some privileged roles do not have MFA configured; No conditional access policies configured; only 72% EDR adoption; EDR definitions 52 days out of date. Expected loss ratio 90%+. Recommend decline or substantial remediation before consideration."
 }

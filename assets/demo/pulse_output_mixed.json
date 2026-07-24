@@ -34,6 +34,24 @@
       "message": "No conditional access exclusions detected"
     },
     {
+      "control": "EDR Adoption Rate",
+      "status": "good",
+      "message": "97% of endpoints have EDR deployed",
+      "tier": "Strong"
+    },
+    {
+      "control": "EDR Exclusions",
+      "status": "warning",
+      "message": "2 exclusion rules detected, including an admin process exclusion",
+      "tier": "Moderate"
+    },
+    {
+      "control": "EDR Definition Currency",
+      "status": "good",
+      "message": "Definitions updated 2 days ago",
+      "tier": "Strong"
+    },
+    {
       "control": "Security Awareness Training",
       "status": "warning",
       "severity": "High",
@@ -73,6 +91,29 @@
       ]
     },
     {
+      "control": "EDR Adoption Rate",
+      "riskCategory": "Malware Execution",
+      "claimExposure": [
+        "Ransomware",
+        "Business Interruption"
+      ]
+    },
+    {
+      "control": "EDR Exclusions",
+      "riskCategory": "Control Bypass",
+      "claimExposure": [
+        "Data Exfiltration",
+        "Ransomware"
+      ]
+    },
+    {
+      "control": "EDR Definition Currency",
+      "riskCategory": "Malware Execution",
+      "claimExposure": [
+        "Ransomware"
+      ]
+    },
+    {
       "control": "Security Awareness Training",
       "riskCategory": "Social Engineering Risk",
       "claimExposure": [
@@ -81,10 +122,10 @@
       ]
     }
   ],
-  "riskScore": 60,
+  "riskScore": 55,
   "lossRatio": {
-    "range": "50\u201370%",
-    "rating": "Moderate"
+    "range": "70\u201390%",
+    "rating": "Elevated"
   },
-  "aiSummary": "Moderate risk posture (60/100) driven by: Legacy authentication activity detected; 6 privileged roles detected. Expected loss ratio 50\u201370%. Recommend review before binding."
+  "aiSummary": "Elevated risk posture (55/100) driven by: Legacy authentication activity detected; 6 privileged roles detected; EDR exclusion rules detected. Expected loss ratio 70\u201390%. Recommend remediation of the drivers below before binding."
 }
