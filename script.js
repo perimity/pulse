@@ -155,10 +155,19 @@
    * network request, just re-rendering the card grid for whichever
    * category is active.
    */
-  function initSignalTabs(panel, allSignals, scenario, data) {
+  function insuranceForCategory(data, cat) {
+    const filtered = data.insuranceSignals.filter((i) => CONTROL_CATEGORY[i.control] === cat);
+    return `
+      <p class="demo-subhead">Insurance exposure</p>
+      <div class="demo-insurance">${insuranceHtml(filtered)}</div>
+    `;
+  }
+
+  function initSignalTabs(panel, allSignals, scenario, data, role) {
     const tabs = panel.querySelectorAll(".signal-tab");
     const grid = panel.querySelector("[data-all-signals]");
     const extra = panel.querySelector("[data-signal-tab-extra]");
+    const insuranceContainer = panel.querySelector("[data-signal-tab-insurance]");
     if (!tabs.length || !grid) return;
 
     tabs.forEach((tab) => {
@@ -172,6 +181,9 @@
         grid.innerHTML = signalsHtml(allSignals.filter((s) => CONTROL_CATEGORY[s.control] === cat));
         if (extra) {
           extra.innerHTML = cat === "human" ? buildTrainingChart(scenario, data) : "";
+        }
+        if (insuranceContainer) {
+          insuranceContainer.innerHTML = insuranceForCategory(data, cat);
         }
       });
     });
@@ -363,6 +375,7 @@
       </div>
       <div class="demo-signals" data-all-signals>${signalsHtml(data.signals.filter((s) => CONTROL_CATEGORY[s.control] === "identity"))}</div>
       <div data-signal-tab-extra></div>
+      ${role === "underwriter" ? `<div data-signal-tab-insurance>${insuranceForCategory(data, "identity")}</div>` : ""}
     `;
 
     let html;
@@ -395,13 +408,11 @@
           <p class="demo-summary-text">${escapeHtml(data.aiSummary)}</p>
         </div>
         ${signals}
-        <p class="demo-subhead">Insurance exposure</p>
-        <div class="demo-insurance">${insuranceHtml(data.insuranceSignals)}</div>
       `;
     }
 
     panel.innerHTML = html;
-    initSignalTabs(panel, data.signals, scenario, data);
+    initSignalTabs(panel, data.signals, scenario, data, role);
   }
 
   /**
