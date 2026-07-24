@@ -202,6 +202,12 @@
   }
 
   function renderDemoPanel(panel, data, role) {
+    const rating = data.lossRatio.rating;
+    const ratingBadge =
+      role === "underwriter"
+        ? `${escapeHtml(rating)} · ${escapeHtml(data.lossRatio.range)}`
+        : escapeHtml(rating);
+
     const header = `
       <div class="demo-header">
         <div>
@@ -210,7 +216,7 @@
         </div>
         <div class="demo-score-row">
           <span class="demo-score">${data.riskScore}<span style="font-size:1rem;color:var(--color-ink-soft);">/100</span></span>
-          <span class="demo-rating ${ratingClass(data.lossRatio.rating)}">${escapeHtml(data.lossRatio.rating)} · ${escapeHtml(data.lossRatio.range)}</span>
+          <span class="demo-rating ${ratingClass(rating)}">${ratingBadge}</span>
         </div>
       </div>
     `;
