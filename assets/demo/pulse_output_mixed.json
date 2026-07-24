@@ -120,6 +120,14 @@
         "Business Email Compromise",
         "Funds Transfer Fraud"
       ]
+    },
+    {
+      "control": "Excessive Privileged Roles",
+      "riskCategory": "Privilege Escalation",
+      "claimExposure": [
+        "Data Breach",
+        "Unauthorized Access"
+      ]
     }
   ],
   "riskScore": 55,
