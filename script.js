@@ -174,6 +174,9 @@
     "Excessive Privileged Roles": "Reduce the number of standing privileged role assignments.",
     "Conditional Access Policies": "Implement conditional access policies to govern sign-in risk.",
     "Conditional Access Exclusions": "Review and tighten conditional access exclusions to close bypass paths.",
+    "EDR Adoption Rate": "Deploy EDR to the remaining unprotected endpoints.",
+    "EDR Exclusions": "Review EDR exclusion rules and remove any that create bypass paths.",
+    "EDR Definition Currency": "Update EDR definitions and enforce a regular update cadence.",
     "Security Awareness Training": "Stand up a documented, dated security awareness training program.",
   };
 
@@ -231,7 +234,9 @@
     "Privileged Role Count": "identity",
     "Conditional Access Policies": "identity",
     "Conditional Access Exclusions": "identity",
-    "Endpoint Detection & Response": "endpoint",
+    "EDR Adoption Rate": "endpoint",
+    "EDR Exclusions": "endpoint",
+    "EDR Definition Currency": "endpoint",
     "Security Awareness Training": "human",
   };
 
@@ -241,6 +246,9 @@
     "Excessive Privileged Roles": 10,
     "Conditional Access Policies": 20,
     "Conditional Access Exclusions": 15,
+    "EDR Adoption Rate": 15,
+    "EDR Exclusions": 10,
+    "EDR Definition Currency": 10,
     "Security Awareness Training": 20,
   };
 
@@ -256,11 +264,7 @@
     signals.forEach((s) => {
       const cat = CONTROL_CATEGORY[s.control];
       if (!cat) return;
-
-      if (s.control === "Endpoint Detection & Response") {
-        if (s.tier === "Moderate") scores.endpoint -= 10;
-        else if (s.tier === "Weak") scores.endpoint -= 25;
-      } else if (s.status === "warning") {
+      if (s.status === "warning") {
         scores[cat] -= CONTROL_DEDUCTION[s.control] || 0;
       }
     });
