@@ -277,9 +277,9 @@
   };
 
   const CATEGORY_LABELS = {
-    identity: "Identity & Access",
-    endpoint: "Endpoint",
-    human: "Human factors",
+    identity: "MFA",
+    endpoint: "EDR",
+    human: "Security Awareness",
   };
 
   function computeCategoryScores(signals) {
@@ -344,9 +344,9 @@
     const signals = `
       <p class="demo-subhead">Signals</p>
       <div class="signal-tabs" role="tablist" aria-label="Signal category">
-        <button class="signal-tab is-active" data-sigcat="identity" role="tab" aria-selected="true">Identity &amp; Access</button>
-        <button class="signal-tab" data-sigcat="endpoint" role="tab" aria-selected="false">Endpoint</button>
-        <button class="signal-tab" data-sigcat="human" role="tab" aria-selected="false">Human factors</button>
+        <button class="signal-tab is-active" data-sigcat="identity" role="tab" aria-selected="true">MFA</button>
+        <button class="signal-tab" data-sigcat="endpoint" role="tab" aria-selected="false">EDR</button>
+        <button class="signal-tab" data-sigcat="human" role="tab" aria-selected="false">Security Awareness</button>
       </div>
       <div class="demo-signals" data-all-signals>${signalsHtml(data.signals.filter((s) => CONTROL_CATEGORY[s.control] === "identity"))}</div>
     `;
