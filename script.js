@@ -261,10 +261,17 @@
     `;
   }
 
+  const ROLE_VALUE_NOTES = {
+    underwriter: "You get verified signal, not self-attested claims — decision-grade evidence for this submission.",
+    broker: "You get a stronger story to bring to market — positioning and leverage, not just a checklist.",
+    organization: "You get a clear list of exactly what to fix before your next renewal — no policy required.",
+  };
+
   function initDemo() {
     const scenarioPicker = document.querySelector(".demo-picker");
     const rolePicker = document.querySelector(".role-picker");
     const panel = document.getElementById("demo-panel");
+    const valueNote = document.getElementById("role-value-note");
     if (!scenarioPicker || !rolePicker || !panel) return;
 
     const scenarioTabs = Array.from(scenarioPicker.querySelectorAll(".demo-tab"));
@@ -285,6 +292,10 @@
         t.classList.toggle("is-active", isActive);
         t.setAttribute("aria-selected", String(isActive));
       });
+
+      if (valueNote) {
+        valueNote.textContent = ROLE_VALUE_NOTES[currentRole] || "";
+      }
 
       panel.innerHTML = '<p class="demo-loading">Loading scenario…</p>';
 
