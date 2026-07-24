@@ -201,7 +201,7 @@
     return `<div class="demo-actions">${items}</div>`;
   }
 
-  function renderDemoPanel(panel, data, role) {
+  function renderDemoPanel(panel, data, role, scenario) {
     const rating = data.lossRatio.rating;
     const ratingBadge =
       role === "underwriter"
@@ -244,6 +244,7 @@
         <p class="demo-subhead">What to fix before renewal</p>
         ${organizationActions(data)}
         ${signals}
+        ${buildTrainingChart(scenario)}
       `;
       return;
     }
@@ -256,8 +257,65 @@
         <p class="demo-summary-text">${escapeHtml(data.aiSummary)}</p>
       </div>
       ${signals}
+      ${buildTrainingChart(scenario)}
       <p class="demo-subhead">Insurance exposure</p>
       <div class="demo-insurance">${insuranceHtml(data.insuranceSignals)}</div>
+    `;
+  }
+
+  /**
+   * Fixture monthly training-completion data, one series per scenario.
+   * Tells the same story as each scenario's Security Awareness Training
+   * signal, just over time instead of as a single point-in-time boolean:
+   * Strong and Weak both show "good" status (stable, current), Mixed
+   * shows "warning" (attested once, nothing since — exactly the
+   * recency problem a flat checkbox hides).
+   */
+  const TRAINING_TREND = {
+    strong: [92, 94, 91, 95, 93, 96],
+    mixed: [78, 82, 75, 40, 0, 0],
+    weak: [85, 88, 90, 87, 91, 89],
+  };
+  const TRAINING_MONTH_LABELS = ["6mo", "5mo", "4mo", "3mo", "2mo", "Now"];
+
+  function trainingBarColor(value) {
+    if (value >= 70) return "var(--color-good)";
+    if (value >= 40) return "var(--color-caution)";
+    return "var(--color-risk)";
+  }
+
+  function buildTrainingChart(scenario) {
+    const values = TRAINING_TREND[scenario];
+    if (!values) return "";
+
+    const barWidth = 60;
+    const gap = 30;
+    const chartTop = 10;
+    const baselineY = 110;
+    const maxBarHeight = 100;
+
+    const bars = values
+      .map((v, i) => {
+        const x = 45 + i * (barWidth + gap);
+        const barHeight = Math.max((v / 100) * maxBarHeight, 2);
+        const y = baselineY - barHeight;
+        const color = trainingBarColor(v);
+        return `
+          <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" rx="4" fill="${color}" opacity="0.85"></rect>
+          <text x="${x + barWidth / 2}" y="${y - 8}" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="var(--color-ink-soft)">${v}%</text>
+          <text x="${x + barWidth / 2}" y="${baselineY + 20}" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--color-ink-soft)">${TRAINING_MONTH_LABELS[i]}</text>
+        `;
+      })
+      .join("");
+
+    return `
+      <p class="demo-subhead">Training completion — last 6 months</p>
+      <div class="training-chart">
+        <svg viewBox="0 0 600 145" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Monthly security awareness training completion rate">
+          <line x1="30" y1="${baselineY}" x2="570" y2="${baselineY}" stroke="var(--color-line)" stroke-width="1"></line>
+          ${bars}
+        </svg>
+      </div>
     `;
   }
 
@@ -305,7 +363,7 @@
           if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
           cache[currentScenario] = await res.json();
         }
-        renderDemoPanel(panel, cache[currentScenario], currentRole);
+        renderDemoPanel(panel, cache[currentScenario], currentRole, currentScenario);
       } catch (err) {
         panel.innerHTML =
           '<p class="demo-error">Couldn\'t load this scenario right now. Please try again in a moment.</p>';
