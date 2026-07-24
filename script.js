@@ -149,6 +149,30 @@
       .join("");
   }
 
+  /**
+   * Wires up the Identity/Endpoint/Human tabs above the signals grid.
+   * Filters the already-fetched signal data client-side — no new
+   * network request, just re-rendering the card grid for whichever
+   * category is active.
+   */
+  function initSignalTabs(panel, allSignals) {
+    const tabs = panel.querySelectorAll(".signal-tab");
+    const grid = panel.querySelector("[data-all-signals]");
+    if (!tabs.length || !grid) return;
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        tabs.forEach((t) => {
+          const isActive = t === tab;
+          t.classList.toggle("is-active", isActive);
+          t.setAttribute("aria-selected", String(isActive));
+        });
+        const cat = tab.dataset.sigcat;
+        grid.innerHTML = signalsHtml(allSignals.filter((s) => CONTROL_CATEGORY[s.control] === cat));
+      });
+    });
+  }
+
   function insuranceHtml(insuranceSignals) {
     return insuranceSignals
       .map(
@@ -319,11 +343,18 @@
 
     const signals = `
       <p class="demo-subhead">Signals</p>
-      <div class="demo-signals">${signalsHtml(data.signals)}</div>
+      <div class="signal-tabs" role="tablist" aria-label="Signal category">
+        <button class="signal-tab is-active" data-sigcat="identity" role="tab" aria-selected="true">Identity &amp; Access</button>
+        <button class="signal-tab" data-sigcat="endpoint" role="tab" aria-selected="false">Endpoint</button>
+        <button class="signal-tab" data-sigcat="human" role="tab" aria-selected="false">Human factors</button>
+      </div>
+      <div class="demo-signals" data-all-signals>${signalsHtml(data.signals.filter((s) => CONTROL_CATEGORY[s.control] === "identity"))}</div>
     `;
 
+    let html;
+
     if (role === "broker") {
-      panel.innerHTML = `
+      html = `
         ${header}
         ${categoryScoresHtml(data.signals)}
         <div class="demo-summary">
@@ -332,11 +363,8 @@
         </div>
         ${signals}
       `;
-      return;
-    }
-
-    if (role === "organization") {
-      panel.innerHTML = `
+    } else if (role === "organization") {
+      html = `
         ${header}
         ${categoryScoresHtml(data.signals)}
         <p class="demo-subhead">What to fix before renewal</p>
@@ -344,22 +372,24 @@
         ${signals}
         ${buildTrainingChart(scenario, data)}
       `;
-      return;
+    } else {
+      // Default: underwriter view — the original, decision-oriented layout.
+      html = `
+        ${header}
+        ${categoryScoresHtml(data.signals)}
+        <div class="demo-summary">
+          <p class="demo-summary-label">Underwriting read</p>
+          <p class="demo-summary-text">${escapeHtml(data.aiSummary)}</p>
+        </div>
+        ${signals}
+        ${buildTrainingChart(scenario, data)}
+        <p class="demo-subhead">Insurance exposure</p>
+        <div class="demo-insurance">${insuranceHtml(data.insuranceSignals)}</div>
+      `;
     }
 
-    // Default: underwriter view — the original, decision-oriented layout.
-    panel.innerHTML = `
-      ${header}
-      ${categoryScoresHtml(data.signals)}
-      <div class="demo-summary">
-        <p class="demo-summary-label">Underwriting read</p>
-        <p class="demo-summary-text">${escapeHtml(data.aiSummary)}</p>
-      </div>
-      ${signals}
-      ${buildTrainingChart(scenario, data)}
-      <p class="demo-subhead">Insurance exposure</p>
-      <div class="demo-insurance">${insuranceHtml(data.insuranceSignals)}</div>
-    `;
+    panel.innerHTML = html;
+    initSignalTabs(panel, data.signals);
   }
 
   /**
