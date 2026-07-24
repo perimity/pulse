@@ -676,6 +676,19 @@ section:not(.hero) + section:not(.hero) {
   gap: 0.75rem;
 }
 
+.training-chart {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  background: var(--color-surface);
+}
+
+.training-chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 .insurance-card {
   border: 1px solid var(--color-line);
   border-radius: var(--radius);
