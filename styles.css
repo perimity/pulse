@@ -447,6 +447,44 @@ section:not(.hero) + section:not(.hero) {
   color: #fff;
 }
 
+.role-picker {
+  margin-top: var(--space-2);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.role-picker-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  margin-right: 0.3rem;
+}
+
+.role-tab {
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.4em 0.9em;
+  border-radius: 999px;
+  border: 1px solid var(--color-line);
+  background: transparent;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+}
+
+.role-tab:hover { border-color: var(--color-purple-light); color: var(--color-ink); }
+
+.role-tab.is-active {
+  background: var(--color-purple-wash);
+  border-color: var(--color-purple-light);
+  color: var(--color-purple-deep);
+}
+
 .demo-panel {
   margin-top: var(--space-4);
   min-height: 12rem;
@@ -596,6 +634,45 @@ section:not(.hero) + section:not(.hero) {
 }
 
 .insurance-card-meta b { color: var(--color-ink); font-weight: 600; }
+
+.demo-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.action-item {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+}
+
+.action-item-marker {
+  flex-shrink: 0;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  background: var(--color-purple-wash);
+  color: var(--color-purple-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 0.1rem;
+}
+
+.action-item-text { font-size: 0.92rem; color: var(--color-ink); }
+
+.demo-clean-state {
+  color: var(--color-ink-soft);
+  font-size: 0.92rem;
+}
 
 /* Audience */
 
