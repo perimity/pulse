@@ -155,9 +155,10 @@
    * network request, just re-rendering the card grid for whichever
    * category is active.
    */
-  function initSignalTabs(panel, allSignals) {
+  function initSignalTabs(panel, allSignals, scenario, data) {
     const tabs = panel.querySelectorAll(".signal-tab");
     const grid = panel.querySelector("[data-all-signals]");
+    const extra = panel.querySelector("[data-signal-tab-extra]");
     if (!tabs.length || !grid) return;
 
     tabs.forEach((tab) => {
@@ -169,6 +170,9 @@
         });
         const cat = tab.dataset.sigcat;
         grid.innerHTML = signalsHtml(allSignals.filter((s) => CONTROL_CATEGORY[s.control] === cat));
+        if (extra) {
+          extra.innerHTML = cat === "human" ? buildTrainingChart(scenario, data) : "";
+        }
       });
     });
   }
@@ -358,6 +362,7 @@
         <button class="signal-tab" data-sigcat="human" role="tab" aria-selected="false">Security Awareness</button>
       </div>
       <div class="demo-signals" data-all-signals>${signalsHtml(data.signals.filter((s) => CONTROL_CATEGORY[s.control] === "identity"))}</div>
+      <div data-signal-tab-extra></div>
     `;
 
     let html;
@@ -379,7 +384,6 @@
         <p class="demo-subhead">What to fix before renewal</p>
         ${organizationActions(data)}
         ${signals}
-        ${buildTrainingChart(scenario, data)}
       `;
     } else {
       // Default: underwriter view — the original, decision-oriented layout.
@@ -391,14 +395,13 @@
           <p class="demo-summary-text">${escapeHtml(data.aiSummary)}</p>
         </div>
         ${signals}
-        ${buildTrainingChart(scenario, data)}
         <p class="demo-subhead">Insurance exposure</p>
         <div class="demo-insurance">${insuranceHtml(data.insuranceSignals)}</div>
       `;
     }
 
     panel.innerHTML = html;
-    initSignalTabs(panel, data.signals);
+    initSignalTabs(panel, data.signals, scenario, data);
   }
 
   /**
