@@ -118,6 +118,23 @@
   function signalsHtml(signals) {
     return signals
       .map((s) => {
+        // Three-tier signals (currently just EDR) carry an explicit
+        // "tier" field for a finer-grained display than plain good/warning.
+        if (s.tier) {
+          const tierClass = { Strong: "is-strong", Moderate: "is-moderate", Weak: "is-weak" }[s.tier] || "is-warning";
+          const tierIcon = { Strong: "✔", Moderate: "●", Weak: "✕" }[s.tier] || "⚠";
+          return `
+            <div class="signal-card ${tierClass}">
+              <div class="signal-card-title">
+                <span class="signal-icon">${tierIcon}</span>
+                <span>${escapeHtml(s.control)}</span>
+                <span class="signal-tier-label">${escapeHtml(s.tier)}</span>
+              </div>
+              <p class="signal-card-message">${escapeHtml(s.message)}</p>
+            </div>
+          `;
+        }
+
         const isGood = s.status === "good";
         return `
           <div class="signal-card ${isGood ? "is-good" : "is-warning"}">
@@ -201,6 +218,81 @@
     return `<div class="demo-actions">${items}</div>`;
   }
 
+  /**
+   * Category grouping is display-only — it re-derives category scores
+   * from the same per-signal deduction weights already used to compute
+   * the overall score, so the three category numbers always sum back
+   * to the exact overall score. Nothing new is invented here.
+   */
+  const CONTROL_CATEGORY = {
+    "Legacy Authentication": "identity",
+    "Privileged Role MFA": "identity",
+    "Excessive Privileged Roles": "identity",
+    "Privileged Role Count": "identity",
+    "Conditional Access Policies": "identity",
+    "Conditional Access Exclusions": "identity",
+    "Endpoint Detection & Response": "endpoint",
+    "Security Awareness Training": "human",
+  };
+
+  const CONTROL_DEDUCTION = {
+    "Legacy Authentication": 10,
+    "Privileged Role MFA": 25,
+    "Excessive Privileged Roles": 10,
+    "Conditional Access Policies": 20,
+    "Conditional Access Exclusions": 15,
+    "Security Awareness Training": 20,
+  };
+
+  const CATEGORY_LABELS = {
+    identity: "Identity & Access",
+    endpoint: "Endpoint",
+    human: "Human factors",
+  };
+
+  function computeCategoryScores(signals) {
+    const scores = { identity: 100, endpoint: 100, human: 100 };
+
+    signals.forEach((s) => {
+      const cat = CONTROL_CATEGORY[s.control];
+      if (!cat) return;
+
+      if (s.control === "Endpoint Detection & Response") {
+        if (s.tier === "Moderate") scores.endpoint -= 10;
+        else if (s.tier === "Weak") scores.endpoint -= 25;
+      } else if (s.status === "warning") {
+        scores[cat] -= CONTROL_DEDUCTION[s.control] || 0;
+      }
+    });
+
+    Object.keys(scores).forEach((k) => { scores[k] = Math.max(scores[k], 0); });
+    return scores;
+  }
+
+  function categoryScoreClass(score) {
+    if (score >= 80) return "is-good";
+    if (score >= 50) return "is-moderate";
+    return "is-weak";
+  }
+
+  function categoryScoresHtml(signals) {
+    const scores = computeCategoryScores(signals);
+    return `
+      <div class="category-scores">
+        ${Object.entries(scores)
+          .map(
+            ([key, score]) => `
+              <div class="category-score-item ${categoryScoreClass(score)}">
+                <span class="category-score-value">${score}</span>
+                <span class="category-score-label">${CATEGORY_LABELS[key]}</span>
+              </div>
+            `
+          )
+          .join("")}
+      </div>
+    `;
+  }
+
   function renderDemoPanel(panel, data, role, scenario) {
     const rating = data.lossRatio.rating;
     const ratingBadge =
@@ -229,6 +321,7 @@
     if (role === "broker") {
       panel.innerHTML = `
         ${header}
+        ${categoryScoresHtml(data.signals)}
         <div class="demo-summary">
           <p class="demo-summary-label">How this positions you</p>
           <p class="demo-summary-text">${brokerSummary(data)}</p>
@@ -241,6 +334,7 @@
     if (role === "organization") {
       panel.innerHTML = `
         ${header}
+        ${categoryScoresHtml(data.signals)}
         <p class="demo-subhead">What to fix before renewal</p>
         ${organizationActions(data)}
         ${signals}
@@ -252,6 +346,7 @@
     // Default: underwriter view — the original, decision-oriented layout.
     panel.innerHTML = `
       ${header}
+      ${categoryScoresHtml(data.signals)}
       <div class="demo-summary">
         <p class="demo-summary-label">Underwriting read</p>
         <p class="demo-summary-text">${escapeHtml(data.aiSummary)}</p>
