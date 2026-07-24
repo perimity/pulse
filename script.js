@@ -94,7 +94,7 @@
   });
 
   // ---------------------------------------------------------------------
-  // Demo: scenario picker
+  // Demo: scenario + role pickers
   // ---------------------------------------------------------------------
 
   /** Minimal HTML-escaping for text pulled from the fetched JSON. */
@@ -115,8 +115,8 @@
     return map[rating] || "rating-moderate";
   }
 
-  function renderDemoPanel(panel, data) {
-    const signalsHtml = data.signals
+  function signalsHtml(signals) {
+    return signals
       .map((s) => {
         const isGood = s.status === "good";
         return `
@@ -130,8 +130,10 @@
         `;
       })
       .join("");
+  }
 
-    const insuranceHtml = data.insuranceSignals
+  function insuranceHtml(insuranceSignals) {
+    return insuranceSignals
       .map(
         (i) => `
           <div class="insurance-card">
@@ -142,8 +144,65 @@
         `
       )
       .join("");
+  }
 
-    panel.innerHTML = `
+  /**
+   * Turns a warning signal's message into a plain "what to fix" action,
+   * for the Organization view. Keyed by control name so it works across
+   * any scenario without depending on exact wording.
+   */
+  const REMEDIATION_MAP = {
+    "Legacy Authentication": "Disable legacy authentication protocols across the tenant.",
+    "Privileged Role MFA": "Require MFA for every privileged role, not just some.",
+    "Excessive Privileged Roles": "Reduce the number of standing privileged role assignments.",
+    "Conditional Access Policies": "Implement conditional access policies to govern sign-in risk.",
+    "Conditional Access Exclusions": "Review and tighten conditional access exclusions to close bypass paths.",
+    "Security Awareness Training": "Stand up a documented, dated security awareness training program.",
+  };
+
+  /** Builds the Broker-framed summary: leads with strengths, flags gaps as what to fix before marketing the risk. */
+  function brokerSummary(data) {
+    const warnings = data.signals.filter((s) => s.status === "warning");
+    const goods = data.signals.filter((s) => s.status === "good");
+
+    if (warnings.length === 0) {
+      return "Every control checks out here — a clean story to bring to market, likely to draw broad carrier interest without much back-and-forth.";
+    }
+
+    const strengths = goods.slice(0, 2).map((s) => s.control).join(", ");
+    const gaps = warnings.map((s) => s.control).join(", ");
+    const strengthsPart = strengths
+      ? `This account leads with strong ${strengths} — a solid foundation to market with. `
+      : "";
+
+    return `${strengthsPart}Before shopping this risk, it's worth addressing: ${gaps}. Gaps like this are often what separates a single quote from a competitive field.`;
+  }
+
+  /** Builds the Organization-framed action list from warning signals. */
+  function organizationActions(data) {
+    const warnings = data.signals.filter((s) => s.status === "warning");
+
+    if (warnings.length === 0) {
+      return '<p class="demo-clean-state">Nice work — every control checked here is in good shape. Keep it that way heading into renewal.</p>';
+    }
+
+    const items = warnings
+      .map((s, i) => {
+        const action = REMEDIATION_MAP[s.control] || s.message;
+        return `
+          <div class="action-item">
+            <span class="action-item-marker">${i + 1}</span>
+            <p class="action-item-text">${escapeHtml(action)}</p>
+          </div>
+        `;
+      })
+      .join("");
+
+    return `<div class="demo-actions">${items}</div>`;
+  }
+
+  function renderDemoPanel(panel, data, role) {
+    const header = `
       <div class="demo-header">
         <div>
           <p class="demo-tenant-name">${escapeHtml(data.tenantName)}</p>
@@ -154,31 +213,69 @@
           <span class="demo-rating ${ratingClass(data.lossRatio.rating)}">${escapeHtml(data.lossRatio.rating)} · ${escapeHtml(data.lossRatio.range)}</span>
         </div>
       </div>
+    `;
 
+    const signals = `
+      <p class="demo-subhead">Signals</p>
+      <div class="demo-signals">${signalsHtml(data.signals)}</div>
+    `;
+
+    if (role === "broker") {
+      panel.innerHTML = `
+        ${header}
+        <div class="demo-summary">
+          <p class="demo-summary-label">How this positions you</p>
+          <p class="demo-summary-text">${brokerSummary(data)}</p>
+        </div>
+        ${signals}
+      `;
+      return;
+    }
+
+    if (role === "organization") {
+      panel.innerHTML = `
+        ${header}
+        <p class="demo-subhead">What to fix before renewal</p>
+        ${organizationActions(data)}
+        ${signals}
+      `;
+      return;
+    }
+
+    // Default: underwriter view — the original, decision-oriented layout.
+    panel.innerHTML = `
+      ${header}
       <div class="demo-summary">
         <p class="demo-summary-label">Underwriting read</p>
         <p class="demo-summary-text">${escapeHtml(data.aiSummary)}</p>
       </div>
-
-      <p class="demo-subhead">Signals</p>
-      <div class="demo-signals">${signalsHtml}</div>
-
+      ${signals}
       <p class="demo-subhead">Insurance exposure</p>
-      <div class="demo-insurance">${insuranceHtml}</div>
+      <div class="demo-insurance">${insuranceHtml(data.insuranceSignals)}</div>
     `;
   }
 
   function initDemo() {
-    const picker = document.querySelector(".demo-picker");
+    const scenarioPicker = document.querySelector(".demo-picker");
+    const rolePicker = document.querySelector(".role-picker");
     const panel = document.getElementById("demo-panel");
-    if (!picker || !panel) return;
+    if (!scenarioPicker || !rolePicker || !panel) return;
 
-    const tabs = Array.from(picker.querySelectorAll(".demo-tab"));
+    const scenarioTabs = Array.from(scenarioPicker.querySelectorAll(".demo-tab"));
+    const roleTabs = Array.from(rolePicker.querySelectorAll(".role-tab"));
     const cache = {};
 
-    async function loadScenario(scenario) {
-      tabs.forEach((t) => {
-        const isActive = t.dataset.scenario === scenario;
+    let currentScenario = "strong";
+    let currentRole = "underwriter";
+
+    async function render() {
+      scenarioTabs.forEach((t) => {
+        const isActive = t.dataset.scenario === currentScenario;
+        t.classList.toggle("is-active", isActive);
+        t.setAttribute("aria-selected", String(isActive));
+      });
+      roleTabs.forEach((t) => {
+        const isActive = t.dataset.role === currentRole;
         t.classList.toggle("is-active", isActive);
         t.setAttribute("aria-selected", String(isActive));
       });
@@ -186,24 +283,33 @@
       panel.innerHTML = '<p class="demo-loading">Loading scenario…</p>';
 
       try {
-        if (!cache[scenario]) {
-          const res = await fetch(`assets/demo/pulse_output_${scenario}.json`);
+        if (!cache[currentScenario]) {
+          const res = await fetch(`assets/demo/pulse_output_${currentScenario}.json`);
           if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
-          cache[scenario] = await res.json();
+          cache[currentScenario] = await res.json();
         }
-        renderDemoPanel(panel, cache[scenario]);
+        renderDemoPanel(panel, cache[currentScenario], currentRole);
       } catch (err) {
         panel.innerHTML =
           '<p class="demo-error">Couldn\'t load this scenario right now. Please try again in a moment.</p>';
-        console.error("Pulse demo: failed to load scenario", scenario, err);
+        console.error("Pulse demo: failed to load scenario", currentScenario, err);
       }
     }
 
-    tabs.forEach((tab) => {
-      tab.addEventListener("click", () => loadScenario(tab.dataset.scenario));
+    scenarioTabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        currentScenario = tab.dataset.scenario;
+        render();
+      });
     });
 
-    // Load a default scenario on first render.
-    loadScenario("strong");
+    roleTabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        currentRole = tab.dataset.role;
+        render();
+      });
+    });
+
+    render();
   }
 })();
