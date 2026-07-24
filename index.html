@@ -149,21 +149,34 @@
           not mockups. Starting with Microsoft Entra ID.
         </p>
 
-        <div class="demo-picker" role="tablist" aria-label="Demo scenario">
-          <button class="demo-tab" data-scenario="strong" role="tab" aria-selected="false">Strong posture</button>
-          <button class="demo-tab" data-scenario="mixed" role="tab" aria-selected="false">Mixed posture</button>
-          <button class="demo-tab" data-scenario="weak" role="tab" aria-selected="false">Weak posture</button>
-        </div>
+        <div class="app-shell">
+          <div class="app-titlebar">
+            <span class="app-dots" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </span>
+            <span class="app-titlebar-label">pulse.perimity.io — live preview</span>
+          </div>
 
-        <div class="role-picker" role="tablist" aria-label="View as">
-          <span class="role-picker-label">View as</span>
-          <button class="role-tab" data-role="underwriter" role="tab" aria-selected="false">Underwriter</button>
-          <button class="role-tab" data-role="broker" role="tab" aria-selected="false">Broker</button>
-          <button class="role-tab" data-role="organization" role="tab" aria-selected="false">Organization</button>
-        </div>
+          <div class="app-toolbar">
+            <div class="demo-picker" role="tablist" aria-label="Demo scenario">
+              <button class="demo-tab" data-scenario="strong" role="tab" aria-selected="false">Strong posture</button>
+              <button class="demo-tab" data-scenario="mixed" role="tab" aria-selected="false">Mixed posture</button>
+              <button class="demo-tab" data-scenario="weak" role="tab" aria-selected="false">Weak posture</button>
+            </div>
 
-        <div class="demo-panel" id="demo-panel" aria-live="polite">
-          <p class="demo-loading">Loading scenario…</p>
+            <div class="role-picker" role="tablist" aria-label="View as">
+              <span class="role-picker-label">View as</span>
+              <button class="role-tab" data-role="underwriter" role="tab" aria-selected="false">Underwriter</button>
+              <button class="role-tab" data-role="broker" role="tab" aria-selected="false">Broker</button>
+              <button class="role-tab" data-role="organization" role="tab" aria-selected="false">Organization</button>
+            </div>
+          </div>
+
+          <div class="app-body">
+            <div class="demo-panel" id="demo-panel" aria-live="polite">
+              <p class="demo-loading">Loading scenario…</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
