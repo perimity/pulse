@@ -668,6 +668,15 @@ section:not(.hero) + section:not(.hero) {
   max-width: 75ch;
 }
 
+.demo-summary-gap {
+  margin-top: 0.85rem;
+  padding-left: 0.9rem;
+  border-left: 3px solid var(--color-purple-light);
+  color: var(--color-ink);
+  max-width: 75ch;
+  font-weight: 500;
+}
+
 .demo-subhead {
   font-family: var(--font-mono);
   font-size: 0.75rem;

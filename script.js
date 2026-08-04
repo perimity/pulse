@@ -221,21 +221,29 @@
   };
 
   /** Builds the Broker-framed summary: leads with strengths, flags gaps as what to fix before marketing the risk. */
+  /** Returns { lead, gap } — split so the gap callout can render as its
+   *  own visually distinct line instead of trailing off the lead sentence. */
   function brokerSummary(data) {
     const warnings = data.signals.filter((s) => s.status === "warning");
     const goods = data.signals.filter((s) => s.status === "good");
 
     if (warnings.length === 0) {
-      return "Every control checks out here — a clean story to bring to market, likely to draw broad carrier interest without much back-and-forth.";
+      return {
+        lead: "Every control checks out here — a clean story to bring to market, likely to draw broad carrier interest without much back-and-forth.",
+        gap: null,
+      };
     }
 
     const strengths = goods.slice(0, 2).map((s) => s.control).join(", ");
     const gaps = warnings.map((s) => s.control).join(", ");
-    const strengthsPart = strengths
-      ? `This account leads with strong ${strengths} — a solid foundation to market with. `
-      : "";
+    const lead = strengths
+      ? `This account leads with strong ${strengths} — a solid foundation to market with.`
+      : "This account is early in the process, with a few open items below before it's ready to market.";
 
-    return `${strengthsPart}Before shopping this risk, it's worth addressing: ${gaps}. Gaps like this are often what separates a single quote from a competitive field.`;
+    return {
+      lead,
+      gap: `Before shopping this risk, it's worth addressing: ${gaps}. Gaps like this are often what separates a single quote from a competitive field.`,
+    };
   }
 
   /** Builds the Organization-framed action list from warning signals. */
@@ -381,12 +389,14 @@
     let html;
 
     if (role === "broker") {
+      const summary = brokerSummary(data);
       html = `
         ${header}
         ${categoryScoresHtml(data.signals)}
         <div class="demo-summary">
           <p class="demo-summary-label">How this positions you</p>
-          <p class="demo-summary-text">${brokerSummary(data)}</p>
+          <p class="demo-summary-text">${summary.lead}</p>
+          ${summary.gap ? `<p class="demo-summary-gap">${summary.gap}</p>` : ""}
         </div>
         ${signals}
       `;
