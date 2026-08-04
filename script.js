@@ -223,6 +223,33 @@
   /** Builds the Broker-framed summary: leads with strengths, flags gaps as what to fix before marketing the risk. */
   /** Returns { lead, gap } — split so the gap callout can render as its
    *  own visually distinct line instead of trailing off the lead sentence. */
+  /** Plain-language phrasing for broker narrative — the underwriter view and
+   *  signal cards keep the precise control names; this is specifically for
+   *  the "story" a broker would actually say out loud to a client or carrier. */
+  const CONTROL_PLAIN_STRENGTH = {
+    "Legacy Authentication": "modern sign-in methods across the board",
+    "Privileged Role MFA": "admin access that requires extra verification",
+    "Excessive Privileged Roles": "tightly controlled admin access",
+    "Conditional Access Policies": "login activity actively governed by policy",
+    "Conditional Access Exclusions": "no gaps carved out of its login policies",
+    "EDR Adoption Rate": "strong endpoint protection coverage",
+    "EDR Exclusions": "no blind spots in its endpoint protection",
+    "EDR Definition Currency": "endpoint protection that's kept current",
+    "Security Awareness Training": "a documented security training program",
+  };
+
+  const CONTROL_PLAIN_GAP = {
+    "Legacy Authentication": "some sign-ins still happening through older, less-protected methods",
+    "Privileged Role MFA": "admin accounts that don't all require extra verification",
+    "Excessive Privileged Roles": "more people carrying admin-level access than is typical",
+    "Conditional Access Policies": "login activity that isn't fully governed by policy yet",
+    "Conditional Access Exclusions": "a few gaps carved out of its login policies",
+    "EDR Adoption Rate": "part of the device fleet not fully covered by endpoint protection",
+    "EDR Exclusions": "a few blind spots in endpoint protection coverage",
+    "EDR Definition Currency": "endpoint protection that isn't consistently kept current",
+    "Security Awareness Training": "no documented security training program on file yet",
+  };
+
   function brokerSummary(data) {
     const warnings = data.signals.filter((s) => s.status === "warning");
     const goods = data.signals.filter((s) => s.status === "good");
@@ -234,15 +261,18 @@
       };
     }
 
-    const strengths = goods.slice(0, 2).map((s) => s.control).join(", ");
-    const gaps = warnings.map((s) => s.control).join(", ");
+    const strengths = goods
+      .slice(0, 2)
+      .map((s) => CONTROL_PLAIN_STRENGTH[s.control] || s.control)
+      .join(" and ");
+    const gaps = warnings.map((s) => CONTROL_PLAIN_GAP[s.control] || s.control).join(", ");
     const lead = strengths
-      ? `This account leads with strong ${strengths} — a solid foundation to market with.`
+      ? `This account already has real strengths to lead with — ${strengths}. That's a solid foundation to market.`
       : "This account is early in the process, with a few open items below before it's ready to market.";
 
     return {
       lead,
-      gap: `Before shopping this risk, it's worth addressing: ${gaps}. Gaps like this are often what separates a single quote from a competitive field.`,
+      gap: `Before shopping this risk, a few things are worth shoring up: ${gaps}. Gaps like these are often what separates a single quote from a competitive field.`,
     };
   }
 
