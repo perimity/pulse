@@ -384,6 +384,50 @@
     `;
   }
 
+  /** Underwriter-facing block: elevates loss ratio out of the small header
+   *  badge into a real explained callout, and reframes existing warning
+   *  signals as the subjectivities a carrier would likely raise before
+   *  bind. Both are derived from data already computed — no new signals. */
+  function underwriterRiskBlock(data) {
+    const warnings = data.signals.filter((s) => s.status === "warning");
+    const rating = data.lossRatio.rating;
+
+    const lossRatioCard = `
+      <div class="uw-lossratio ${ratingClass(rating)}">
+        <p class="uw-lossratio-label">Expected loss ratio impact</p>
+        <p class="uw-lossratio-value">${escapeHtml(rating)} <span class="uw-lossratio-range">${escapeHtml(data.lossRatio.range)}</span></p>
+        <p class="uw-lossratio-note">${escapeHtml(data.aiSummary)}</p>
+      </div>
+    `;
+
+    if (warnings.length === 0) {
+      return `
+        ${lossRatioCard}
+        <p class="demo-clean-state">No open items likely to generate subjectivities — this submission is positioned to move to bind with minimal friction.</p>
+      `;
+    }
+
+    const items = warnings
+      .map(
+        (s) => `
+          <div class="uw-subjectivity-item">
+            <span class="uw-subjectivity-marker">!</span>
+            <div>
+              <p class="uw-subjectivity-control">${escapeHtml(s.control)}</p>
+              <p class="uw-subjectivity-text">${escapeHtml(CONTROL_PLAIN_GAP[s.control] || s.message)}</p>
+            </div>
+          </div>
+        `
+      )
+      .join("");
+
+    return `
+      ${lossRatioCard}
+      <p class="demo-subhead">Likely subjectivities before bind</p>
+      <div class="uw-subjectivities">${items}</div>
+    `;
+  }
+
   function renderDemoPanel(panel, data, role, scenario) {
     const rating = data.lossRatio.rating;
     const ratingBadge =
@@ -439,14 +483,12 @@
         ${signals}
       `;
     } else {
-      // Default: underwriter view — the original, decision-oriented layout.
+      // Default: underwriter view — decision-oriented, now led by loss
+      // ratio impact and likely subjectivities rather than a plain summary.
       html = `
         ${header}
         ${categoryScoresHtml(data.signals)}
-        <div class="demo-summary">
-          <p class="demo-summary-label">Underwriting read</p>
-          <p class="demo-summary-text">${escapeHtml(data.aiSummary)}</p>
-        </div>
+        ${underwriterRiskBlock(data)}
         ${signals}
       `;
     }
