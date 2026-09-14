@@ -1,41 +1,3 @@
-/* ==========================================================================
-   TWO CHANGES TO styles.css  — both verified rendering correctly at
-   desktop (1200px), tablet (860px), and mobile (390px).
-   ========================================================================== */
-
-
-/* --------------------------------------------------------------------------
-   CHANGE 1 — EDIT an existing rule (around line 967).
-
-   .roadmap-grid is hardcoded to 2 columns. With a third card added, one
-   would orphan onto its own row. Change the 2 to a 3.
-
-   FIND:     grid-template-columns: repeat(2, 1fr);
-   (inside the .roadmap-grid rule specifically)
-
-   REPLACE WITH:
-   -------------------------------------------------------------------------- */
-
-/*
-.roadmap-grid {
-  margin-top: var(--space-4);
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);   <-- only this line changes
-  gap: var(--space-3);
-}
-*/
-
-
-/* --------------------------------------------------------------------------
-   CHANGE 2 — ADD everything below.
-
-   Paste directly above the existing "/* Roadmap */" comment block to keep
-   the file's section ordering intact.
-
-   No padding or border-top needed — section:not(.hero) already handles
-   both automatically for any new section.
-   -------------------------------------------------------------------------- */
-
 /* Framework mapping */
 
 .framework-intro {
@@ -73,25 +35,14 @@
   color: var(--color-purple-deep);
 }
 
-/* Tablet: three roadmap cards get cramped, so drop to two.
-   IMPORTANT: this is deliberately bounded with min-width: 721px so it
-   can't override the existing max-width: 720px mobile rule that collapses
-   the grid to a single column. Without that bound, mobile breaks. */
+@media (max-width: 720px) {
+  .framework-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (min-width: 721px) and (max-width: 980px) {
   .roadmap-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
-
-
-/* --------------------------------------------------------------------------
-   CHANGE 2b — one line into an EXISTING media query (around line 1006).
-
-   The @media (max-width: 720px) block already collapses .roadmap-grid.
-   Add .framework-grid alongside it so it reads:
-
-     @media (max-width: 720px) {
-       .roadmap-grid { grid-template-columns: 1fr; }
-       .framework-grid { grid-template-columns: 1fr; }
-     }
-   -------------------------------------------------------------------------- */
