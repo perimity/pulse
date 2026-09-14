@@ -180,7 +180,7 @@
         const cat = tab.dataset.sigcat;
         grid.innerHTML = signalsHtml(allSignals.filter((s) => CONTROL_CATEGORY[s.control] === cat));
         if (extra) {
-          extra.innerHTML = cat === "human" ? buildTrainingChart(scenario, data) : "";
+          extra.innerHTML = "";
         }
         if (insuranceContainer) {
           insuranceContainer.innerHTML = insuranceForCategory(data, cat);
@@ -211,13 +211,17 @@
   const REMEDIATION_MAP = {
     "Legacy Authentication": "Disable legacy authentication protocols across the tenant.",
     "Privileged Role MFA": "Require MFA for every privileged role, not just some.",
-    "Excessive Privileged Roles": "Reduce the number of standing privileged role assignments.",
     "Conditional Access Policies": "Implement conditional access policies to govern sign-in risk.",
     "Conditional Access Exclusions": "Review and tighten conditional access exclusions to close bypass paths.",
     "EDR Adoption Rate": "Deploy EDR to the remaining unprotected endpoints.",
-    "EDR Exclusions": "Review EDR exclusion rules and remove any that create bypass paths.",
+    "EDR Exclusion Scope": "Review EDR exclusion rules and remove any that create bypass paths.",
     "EDR Definition Currency": "Update EDR definitions and enforce a regular update cadence.",
     "Security Awareness Training": "Stand up a documented, dated security awareness training program.",
+    "Privileged Role Scope": "Reduce the number of standing privileged role assignments.",
+    "Standing Privileged Access": "Move privileged roles to just-in-time activation instead of permanent assignment.",
+    "Discovered Vulnerabilities": "Patch the open high and critical vulnerabilities, starting with the oldest.",
+    "Security Recommendation Coverage": "Work through the outstanding security recommendations flagged on managed devices.",
+    "Wire Transfer Verification": "Document an out-of-band callback procedure for wire transfers above a set threshold.",
   };
 
   /** Builds the Broker-framed summary: leads with strengths, flags gaps as what to fix before marketing the risk. */
@@ -229,25 +233,33 @@
   const CONTROL_PLAIN_STRENGTH = {
     "Legacy Authentication": "modern sign-in methods across the board",
     "Privileged Role MFA": "admin access that requires extra verification",
-    "Excessive Privileged Roles": "tightly controlled admin access",
     "Conditional Access Policies": "login activity actively governed by policy",
     "Conditional Access Exclusions": "no gaps carved out of its login policies",
     "EDR Adoption Rate": "strong endpoint protection coverage",
-    "EDR Exclusions": "no blind spots in its endpoint protection",
+    "EDR Exclusion Scope": "no blind spots in its endpoint protection",
     "EDR Definition Currency": "endpoint protection that's kept current",
     "Security Awareness Training": "a documented security training program",
+    "Privileged Role Scope": "tightly controlled admin access",
+    "Standing Privileged Access": "admin rights granted only when needed, not permanently",
+    "Discovered Vulnerabilities": "a clean patching record with no open critical issues",
+    "Security Recommendation Coverage": "security recommendations acted on consistently",
+    "Wire Transfer Verification": "a documented callback procedure before wires go out",
   };
 
   const CONTROL_PLAIN_GAP = {
     "Legacy Authentication": "some sign-ins still happening through older, less-protected methods",
     "Privileged Role MFA": "admin accounts that don't all require extra verification",
-    "Excessive Privileged Roles": "more people carrying admin-level access than is typical",
     "Conditional Access Policies": "login activity that isn't fully governed by policy yet",
     "Conditional Access Exclusions": "a few gaps carved out of its login policies",
     "EDR Adoption Rate": "part of the device fleet not fully covered by endpoint protection",
-    "EDR Exclusions": "a few blind spots in endpoint protection coverage",
+    "EDR Exclusion Scope": "a few blind spots in endpoint protection coverage",
     "EDR Definition Currency": "endpoint protection that isn't consistently kept current",
     "Security Awareness Training": "no documented security training program on file yet",
+    "Privileged Role Scope": "more people carrying admin-level access than is typical",
+    "Standing Privileged Access": "admin rights left permanently switched on rather than granted when needed",
+    "Discovered Vulnerabilities": "known security holes left unpatched well past a reasonable window",
+    "Security Recommendation Coverage": "a backlog of flagged security recommendations not yet acted on",
+    "Wire Transfer Verification": "no documented verification step before money moves out the door",
   };
 
   function brokerSummary(data) {
@@ -306,57 +318,81 @@
    * to the exact overall score. Nothing new is invented here.
    */
   const CONTROL_CATEGORY = {
+    // Tier 1 — independently verified via Microsoft Graph / Defender API
     "Legacy Authentication": "identity",
-    "Privileged Role MFA": "identity",
-    "Excessive Privileged Roles": "identity",
-    "Privileged Role Count": "identity",
     "Conditional Access Policies": "identity",
     "Conditional Access Exclusions": "identity",
     "EDR Adoption Rate": "endpoint",
-    "EDR Exclusions": "endpoint",
+    "EDR Exclusion Scope": "endpoint",
     "EDR Definition Currency": "endpoint",
-    "Security Awareness Training": "human",
+    "Privileged Role MFA": "privileged",
+    "Privileged Role Scope": "privileged",
+    "Standing Privileged Access": "privileged",
+    "Discovered Vulnerabilities": "vulnerability",
+    "Security Recommendation Coverage": "vulnerability",
+    // Tier 2 — self-attested, document-verified. Never scored.
+    "Security Awareness Training": "attested",
+    "Wire Transfer Verification": "attested",
   };
 
+  /** Tier 1 categories feed the core score. Tier 2 is shown separately. */
+  const VERIFIED_CATEGORIES = ["identity", "endpoint", "privileged", "vulnerability"];
+
   const CONTROL_DEDUCTION = {
-    "Legacy Authentication": 10,
-    "Privileged Role MFA": 25,
-    "Excessive Privileged Roles": 10,
-    "Conditional Access Policies": 20,
-    "Conditional Access Exclusions": 15,
-    "EDR Adoption Rate": 15,
-    "EDR Exclusions": 10,
-    "EDR Definition Currency": 10,
-    "Security Awareness Training": 20,
+    "Legacy Authentication": 8,
+    "Conditional Access Policies": 15,
+    "Conditional Access Exclusions": 10,
+    "Privileged Role MFA": 18,
+    "Privileged Role Scope": 8,
+    "Standing Privileged Access": 10,
   };
 
   const CATEGORY_LABELS = {
     identity: "MFA",
     endpoint: "EDR",
-    human: "Security Awareness",
+    privileged: "Privileged Access",
+    vulnerability: "Vulnerability Mgmt",
   };
 
-  const EDR_TIER_DEDUCTIONS = {
-    "EDR Adoption Rate": { Strong: 0, Moderate: 8, Weak: 15 },
-    "EDR Exclusions": { Strong: 0, Moderate: 5, Weak: 10 },
-    "EDR Definition Currency": { Strong: 0, Moderate: 5, Weak: 10 },
+  const TIER_DEDUCTIONS = {
+    "EDR Adoption Rate": { Strong: 0, Moderate: 6, Weak: 12 },
+    "EDR Exclusion Scope": { Strong: 0, Moderate: 4, Weak: 8 },
+    "EDR Definition Currency": { Strong: 0, Moderate: 4, Weak: 8 },
+    "Discovered Vulnerabilities": { Strong: 0, Moderate: 6, Weak: 12 },
+    "Security Recommendation Coverage": { Strong: 0, Moderate: 4, Weak: 8 },
+  };
+
+  /** Worst-case deduction total per category — lets each category score
+   *  scale against its own maximum, so a fully-failed category reads 0
+   *  rather than an arbitrary number. Keeps category scores coherent with
+   *  the overall score, which is their straight average. */
+  const CATEGORY_MAX = {
+    identity: 33,      // 8 + 15 + 10
+    endpoint: 28,      // 12 + 8 + 8
+    privileged: 36,    // 18 + 8 + 10
+    vulnerability: 20, // 12 + 8
   };
 
   function computeCategoryScores(signals) {
-    const scores = { identity: 100, endpoint: 100, human: 100 };
+    const deducted = {};
+    VERIFIED_CATEGORIES.forEach((c) => { deducted[c] = 0; });
 
     signals.forEach((s) => {
       const cat = CONTROL_CATEGORY[s.control];
-      if (!cat) return;
+      if (!cat || !VERIFIED_CATEGORIES.includes(cat)) return;
 
-      if (EDR_TIER_DEDUCTIONS[s.control]) {
-        scores[cat] -= EDR_TIER_DEDUCTIONS[s.control][s.tier] || 0;
+      if (TIER_DEDUCTIONS[s.control]) {
+        deducted[cat] += TIER_DEDUCTIONS[s.control][s.tier] || 0;
       } else if (s.status === "warning") {
-        scores[cat] -= CONTROL_DEDUCTION[s.control] || 0;
+        deducted[cat] += CONTROL_DEDUCTION[s.control] || 0;
       }
     });
 
-    Object.keys(scores).forEach((k) => { scores[k] = Math.max(scores[k], 0); });
+    const scores = {};
+    VERIFIED_CATEGORIES.forEach((c) => {
+      const max = CATEGORY_MAX[c] || 1;
+      scores[c] = Math.max(Math.round(100 - (deducted[c] / max) * 100), 0);
+    });
     return scores;
   }
 
@@ -428,6 +464,32 @@
     `;
   }
 
+  /**
+   * Tier 2 — self-attested, document-verified evidence. Deliberately rendered
+   * as its own block, outside the category scores, because it is NOT
+   * independently verified via Graph/Defender API. Blending it into the core
+   * score would treat a checkbox as equal to an API-verified fact, which is
+   * exactly the problem Pulse exists to solve.
+   */
+  function attestedBlock(data, scenario) {
+    const attested = data.signals.filter(
+      (s) => CONTROL_CATEGORY[s.control] === "attested"
+    );
+    if (!attested.length) return "";
+
+    const training = attested.find((s) => s.control === "Security Awareness Training");
+    const chart = training && training.status === "warning"
+      ? buildTrainingChart(scenario, data)
+      : "";
+
+    return `
+      <p class="demo-subhead">Supplementary evidence <span class="attested-flag">Self-attested</span></p>
+      <p class="attested-note">Provided by the insured with supporting documentation. Not independently verified, and not included in the score above.</p>
+      <div class="demo-signals">${signalsHtml(attested)}</div>
+      ${chart}
+    `;
+  }
+
   function renderDemoPanel(panel, data, role, scenario) {
     const rating = data.lossRatio.rating;
     const ratingBadge =
@@ -453,11 +515,13 @@
       <div class="signal-tabs" role="tablist" aria-label="Signal category">
         <button class="signal-tab is-active" data-sigcat="identity" role="tab" aria-selected="true">MFA</button>
         <button class="signal-tab" data-sigcat="endpoint" role="tab" aria-selected="false">EDR</button>
-        <button class="signal-tab" data-sigcat="human" role="tab" aria-selected="false">Security Awareness</button>
+        <button class="signal-tab" data-sigcat="privileged" role="tab" aria-selected="false">Privileged Access</button>
+        <button class="signal-tab" data-sigcat="vulnerability" role="tab" aria-selected="false">Vulnerability Mgmt</button>
       </div>
       <div class="demo-signals" data-all-signals>${signalsHtml(data.signals.filter((s) => CONTROL_CATEGORY[s.control] === "identity"))}</div>
       <div data-signal-tab-extra></div>
       ${role === "underwriter" ? `<div data-signal-tab-insurance>${insuranceForCategory(data, "identity")}</div>` : ""}
+      ${attestedBlock(data, scenario)}
     `;
 
     let html;
