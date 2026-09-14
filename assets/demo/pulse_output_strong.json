@@ -19,7 +19,7 @@
       "message": "All privileged roles require MFA"
     },
     {
-      "control": "Privileged Role Count",
+      "control": "Privileged Role Scope",
       "status": "good",
       "message": "4 privileged roles detected"
     },
@@ -40,7 +40,7 @@
       "tier": "Strong"
     },
     {
-      "control": "EDR Exclusions",
+      "control": "EDR Exclusion Scope",
       "status": "good",
       "message": "No EDR exclusions detected",
       "tier": "Strong"
@@ -52,10 +52,34 @@
       "tier": "Strong"
     },
     {
+      "control": "Standing Privileged Access",
+      "status": "good",
+      "message": "All 4 privileged roles activated just-in-time through PIM"
+    },
+    {
+      "control": "Discovered Vulnerabilities",
+      "status": "good",
+      "tier": "Strong",
+      "message": "No high or critical vulnerabilities open across 340 managed devices"
+    },
+    {
+      "control": "Security Recommendation Coverage",
+      "status": "good",
+      "tier": "Strong",
+      "message": "94% of flagged security recommendations remediated"
+    },
+    {
       "control": "Security Awareness Training",
       "status": "good",
       "severity": "Low",
-      "message": "Training document present"
+      "message": "Training document present",
+      "verification": "self-attested"
+    },
+    {
+      "control": "Wire Transfer Verification",
+      "status": "good",
+      "verification": "self-attested",
+      "message": "Documented callback verification required for transfers over $10,000"
     }
   ],
   "insuranceSignals": [
@@ -76,7 +100,7 @@
       ]
     },
     {
-      "control": "Privileged Role Count",
+      "control": "Privileged Role Scope",
       "riskCategory": "Privilege Escalation",
       "claimExposure": [
         "Data Breach",
@@ -107,7 +131,7 @@
       ]
     },
     {
-      "control": "EDR Exclusions",
+      "control": "EDR Exclusion Scope",
       "riskCategory": "Control Bypass",
       "claimExposure": [
         "Data Exfiltration",
@@ -128,12 +152,43 @@
         "Business Email Compromise",
         "Funds Transfer Fraud"
       ]
+    },
+    {
+      "control": "Standing Privileged Access",
+      "riskCategory": "Privilege Escalation",
+      "claimExposure": [
+        "Ransomware",
+        "Data Breach"
+      ]
+    },
+    {
+      "control": "Discovered Vulnerabilities",
+      "riskCategory": "Exploitable Attack Surface",
+      "claimExposure": [
+        "Ransomware",
+        "Business Interruption"
+      ]
+    },
+    {
+      "control": "Security Recommendation Coverage",
+      "riskCategory": "Exploitable Attack Surface",
+      "claimExposure": [
+        "Ransomware"
+      ]
+    },
+    {
+      "control": "Wire Transfer Verification",
+      "riskCategory": "Social Engineering",
+      "claimExposure": [
+        "Funds Transfer Fraud",
+        "Business Email Compromise"
+      ]
     }
   ],
   "riskScore": 100,
   "lossRatio": {
-    "range": "30\u201350%",
+    "range": "30–50%",
     "rating": "Favorable"
   },
-  "aiSummary": "Favorable risk posture with no material control gaps identified. Expected loss ratio 30\u201350%. Recommend standard terms."
+  "aiSummary": "Favorable risk posture with no material control gaps identified. Expected loss ratio 30–50%. Recommend standard terms."
 }

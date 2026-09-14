@@ -19,7 +19,7 @@
       "message": "All privileged roles require MFA"
     },
     {
-      "control": "Excessive Privileged Roles",
+      "control": "Privileged Role Scope",
       "status": "warning",
       "message": "6 privileged roles detected"
     },
@@ -40,7 +40,7 @@
       "tier": "Strong"
     },
     {
-      "control": "EDR Exclusions",
+      "control": "EDR Exclusion Scope",
       "status": "warning",
       "message": "2 exclusion rules detected, including an admin process exclusion",
       "tier": "Moderate"
@@ -52,10 +52,34 @@
       "tier": "Strong"
     },
     {
+      "control": "Standing Privileged Access",
+      "status": "warning",
+      "message": "4 of 6 privileged roles are permanently active rather than activated on demand"
+    },
+    {
+      "control": "Discovered Vulnerabilities",
+      "status": "warning",
+      "tier": "Moderate",
+      "message": "12 high-severity vulnerabilities open, oldest unpatched 47 days"
+    },
+    {
+      "control": "Security Recommendation Coverage",
+      "status": "warning",
+      "tier": "Moderate",
+      "message": "61% of flagged security recommendations remediated"
+    },
+    {
       "control": "Security Awareness Training",
       "status": "warning",
       "severity": "High",
-      "message": "No training document detected"
+      "message": "No training document detected",
+      "verification": "self-attested"
+    },
+    {
+      "control": "Wire Transfer Verification",
+      "status": "warning",
+      "verification": "self-attested",
+      "message": "No documented out-of-band verification procedure provided"
     }
   ],
   "insuranceSignals": [
@@ -99,7 +123,7 @@
       ]
     },
     {
-      "control": "EDR Exclusions",
+      "control": "EDR Exclusion Scope",
       "riskCategory": "Control Bypass",
       "claimExposure": [
         "Data Exfiltration",
@@ -122,18 +146,49 @@
       ]
     },
     {
-      "control": "Excessive Privileged Roles",
+      "control": "Privileged Role Scope",
       "riskCategory": "Privilege Escalation",
       "claimExposure": [
         "Data Breach",
         "Unauthorized Access"
       ]
+    },
+    {
+      "control": "Standing Privileged Access",
+      "riskCategory": "Privilege Escalation",
+      "claimExposure": [
+        "Ransomware",
+        "Data Breach"
+      ]
+    },
+    {
+      "control": "Discovered Vulnerabilities",
+      "riskCategory": "Exploitable Attack Surface",
+      "claimExposure": [
+        "Ransomware",
+        "Business Interruption"
+      ]
+    },
+    {
+      "control": "Security Recommendation Coverage",
+      "riskCategory": "Exploitable Attack Surface",
+      "claimExposure": [
+        "Ransomware"
+      ]
+    },
+    {
+      "control": "Wire Transfer Verification",
+      "riskCategory": "Social Engineering",
+      "claimExposure": [
+        "Funds Transfer Fraud",
+        "Business Email Compromise"
+      ]
     }
   ],
-  "riskScore": 55,
+  "riskScore": 66,
   "lossRatio": {
-    "range": "70\u201390%",
+    "range": "70–90%",
     "rating": "Elevated"
   },
-  "aiSummary": "Elevated risk posture (55/100) driven by: Legacy authentication activity detected; 6 privileged roles detected; EDR exclusion rules detected. Expected loss ratio 70\u201390%. Recommend remediation of the drivers below before binding."
+  "aiSummary": "Elevated risk posture (66/100) driven by: Legacy authentication activity detected; 6 privileged roles detected; 2 exclusion rules detected, including an admin process exclusion. Expected loss ratio 70–90%."
 }

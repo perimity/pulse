@@ -19,7 +19,7 @@
       "message": "Some privileged roles do not have MFA configured"
     },
     {
-      "control": "Privileged Role Count",
+      "control": "Privileged Role Scope",
       "status": "good",
       "message": "3 privileged roles detected"
     },
@@ -40,7 +40,7 @@
       "tier": "Weak"
     },
     {
-      "control": "EDR Exclusions",
+      "control": "EDR Exclusion Scope",
       "status": "good",
       "message": "No EDR exclusions detected",
       "tier": "Strong"
@@ -52,10 +52,34 @@
       "tier": "Weak"
     },
     {
+      "control": "Standing Privileged Access",
+      "status": "warning",
+      "message": "All 3 privileged roles permanently active — no just-in-time activation configured"
+    },
+    {
+      "control": "Discovered Vulnerabilities",
+      "status": "warning",
+      "tier": "Weak",
+      "message": "38 high or critical vulnerabilities open, oldest unpatched 190 days"
+    },
+    {
+      "control": "Security Recommendation Coverage",
+      "status": "warning",
+      "tier": "Weak",
+      "message": "23% of flagged security recommendations remediated"
+    },
+    {
       "control": "Security Awareness Training",
       "status": "good",
       "severity": "Low",
-      "message": "Training document present"
+      "message": "Training document present",
+      "verification": "self-attested"
+    },
+    {
+      "control": "Wire Transfer Verification",
+      "status": "warning",
+      "verification": "self-attested",
+      "message": "No documented out-of-band verification procedure provided"
     }
   ],
   "insuranceSignals": [
@@ -76,7 +100,7 @@
       ]
     },
     {
-      "control": "Privileged Role Count",
+      "control": "Privileged Role Scope",
       "riskCategory": "Privilege Escalation",
       "claimExposure": [
         "Data Breach",
@@ -107,7 +131,7 @@
       ]
     },
     {
-      "control": "EDR Exclusions",
+      "control": "EDR Exclusion Scope",
       "riskCategory": "Control Bypass",
       "claimExposure": [
         "Data Exfiltration",
@@ -128,12 +152,43 @@
         "Business Email Compromise",
         "Funds Transfer Fraud"
       ]
+    },
+    {
+      "control": "Standing Privileged Access",
+      "riskCategory": "Privilege Escalation",
+      "claimExposure": [
+        "Ransomware",
+        "Data Breach"
+      ]
+    },
+    {
+      "control": "Discovered Vulnerabilities",
+      "riskCategory": "Exploitable Attack Surface",
+      "claimExposure": [
+        "Ransomware",
+        "Business Interruption"
+      ]
+    },
+    {
+      "control": "Security Recommendation Coverage",
+      "riskCategory": "Exploitable Attack Surface",
+      "claimExposure": [
+        "Ransomware"
+      ]
+    },
+    {
+      "control": "Wire Transfer Verification",
+      "riskCategory": "Social Engineering",
+      "claimExposure": [
+        "Funds Transfer Fraud",
+        "Business Email Compromise"
+      ]
     }
   ],
-  "riskScore": 30,
+  "riskScore": 26,
   "lossRatio": {
     "range": "90%+",
     "rating": "Adverse"
   },
-  "aiSummary": "Adverse risk posture (30/100) driven by: Some privileged roles do not have MFA configured; No conditional access policies configured; only 72% EDR adoption; EDR definitions 52 days out of date. Expected loss ratio 90%+. Recommend decline or substantial remediation before consideration."
+  "aiSummary": "Adverse risk posture (26/100) driven by: Some privileged roles do not have MFA configured; No conditional access policies configured; 72% of endpoints have EDR deployed. Expected loss ratio 90%+."
 }
